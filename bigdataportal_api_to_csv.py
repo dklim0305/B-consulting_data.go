@@ -32,6 +32,63 @@ JITTER_RANGE_S = (0.0, 0.05)
 SAVE_DIR = r"C:\Users\admin\Downloads"
 PARTIAL_PREFIX = "bid_result_partial_"
 PARTIAL_EVERY_PAGES = 50
+
+# 컬럼명 변환
+col_mapping = {
+    "bidNtceNo": "입찰공고번호",
+    "bidNtceOrd": "입찰공고차수",
+    "refNtceNo": "참조공고번호",
+    "refNtceOrd": "참조공고차수",
+    "ppsNtceYn": "나라장터공고여부",
+    "bidNtceNm": "입찰공고명",
+    "bidNtceSttusNm": "입찰공고상태명",
+    "bidNtceDate": "입찰공고일자",
+    "bidNtceBgn": "입찰공고시각",
+    "bsnsDivNm": "업무구분명",
+    "intrntnlBidYn": "국제입찰여부",
+    "cmmnCntrctYn": "공동계약여부",
+    "cmmnReciptMethdNm": "공동수급방식명",
+    "elctrnBidYn": "전자입찰여부",
+    "cntrctCnclsSttusNm": "계약체결형태명",
+    "cntrctCnclsMthdNm": "계약체결방법명",
+    "bidwinrDcsnMthdNm": "낙찰자결정방법명",
+    "ntceInsttNm": "공고기관명",
+    "ntceInsttCd": "공고기관코드",
+    "ntceInsttOfclDeptNm": "공고기관담당자부서명",
+    "ntceInsttOfclNm": "공고기관담당자명",
+    "ntceInsttOfclTel": "공고기관담당자전화번호",
+    "ntceInsttOfclEmailAdrs": "공고기관담당자이메일주소",
+    "dmndInsttNm": "수요기관명",
+    "dmndInsttCd": "수요기관코드",
+    "dmndInsttOfclDeptNm": "수요기관담당자부서명",
+    "dmndInsttOfclNm": "수요기관담당자명",
+    "dmndInsttOfclTel": "수요기관담당자전화번호",
+    "dmndInsttOfclEmailAdrs": "수요기관담당자이메일주소",
+    "presnatnOprtnYn": "설명회실시여부",
+    "presnatnOprtnDate": "설명회실시일자",
+    "presnatnOprtnTm": "설명회실시시각",
+    "presnatnOprtnPlce": "설명회실시장소",
+    "bidPrtcptQlfctRgstClseDate": "입찰참가자격등록마감일자",
+    "bidPrtcptQlfctRgstClseTm": "입찰참가자격등록마감시각",
+    "cmmnReciptAgrmntClseDate": "공동수급협정마감일자",
+    "cmmnReciptAgrmntClseTm": "공동수급협정마감시각",
+    "bidBeginDate": "입찰개시일자",
+    "bidBeginTm": "입찰개시시각",
+    "bidClseDate": "입찰마감일자",
+    "bidClseTm": "입찰마감시각",
+    "opengDate": "개찰일자",
+    "opengTm": "개찰시각",
+    "opengPlce": "개찰장소",
+    "asignBdgtAmt": "배정예산금액",
+    "presmptPrce": "추정가격",
+    "rsrvtnPrceDcsnMthdNm": "예정가격결정방법명",
+    "rgnLmtYn": "지역제한여부",
+    "prtcptPsblRgnNm": "참가가능지역명",
+    "indstrytyLmtYn": "업종제한여부",
+    "bidprcPsblIndstrytyNm": "투찰가능업종명",
+    "bidNtceUrl": "입찰공고URL",
+    "dataBssDate": "데이터기준일자"
+}
 # ==========================================
 
 def build_query(page: int) -> str:
@@ -75,7 +132,9 @@ def save_partial(rows, part_no):
     path = os.path.join(SAVE_DIR, f"{PARTIAL_PREFIX}{part_no}_{now}.csv")
     pd.json_normalize(rows).to_csv(path, index=False, encoding='utf-8-sig')
     print(f"중간 저장: {path}")
-
+    
+# csv로 저장해놓다가     
+# 합칠때 csv로 안한 이유가 무엇인지 궁금 
 def merge_partials_to_excel():
     files = sorted(glob.glob(os.path.join(SAVE_DIR, f"{PARTIAL_PREFIX}*.csv")))
     if not files:
@@ -83,6 +142,7 @@ def merge_partials_to_excel():
         return
     dfs = [pd.read_csv(f, dtype=str, encoding='utf-8-sig') for f in files]
     df_all = pd.concat(dfs, ignore_index=True)
+    df_all = df_all.rename(columns=col_mapping)
     df_all = df_all.astype(str).drop_duplicates()
 
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
