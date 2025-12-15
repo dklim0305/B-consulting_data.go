@@ -48,7 +48,11 @@ public class Scheduler {
 
     public static void main(String[] args) {
         Scheduler scheduler = new Scheduler();
+        // 공공데이터포털 조달청_계약정보
         scheduler.execute(new Egov_Cntrct_Daily(), 0, 0, 0);
+        // 공공데이터포털 조달청_입찰공고목록 정보에 대한 물품조회
+        scheduler.execute(new Egov_Bid_Pblanc_Thng_Daily(), 0, 10, 0);
+        // 오픈다트
         scheduler.execute(new OpenDart_Daily(), 10, 0, 0);
     }
 

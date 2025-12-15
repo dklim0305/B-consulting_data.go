@@ -137,7 +137,7 @@ public class Egov_Cntrct_Daily implements Runnable{
                     item.addProperty("rprsntCorpAdrs", rprsntCorpAdrs);
                     item.addProperty("rprsntCorpContactTel", rprsntCorpContactTel);
                     item.addProperty("dataBssDate", dataBssDate);
-                    resultJsonArr.add(ele);
+                    resultJsonArr.add(item);
 
                     dataCount++;
                     System.out.println(dataCount + "/" + totalCount + "건");
@@ -270,11 +270,17 @@ public class Egov_Cntrct_Daily implements Runnable{
                                                         "RPRSNT_CORP_BIZRNO," +
                                                         "RPRSNT_CORP_ADRS," +
                                                         "RPRSNT_CORP_CONTACT_TEL," +
-                                                        "DATA_BSS_DATE)" +
-                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                                                        "DATA_BSS_DATE," +
+                                                        "DEL_YN," +
+                                                        "FRST_RGSR_DTL_DTTM," +
+                                                        "LAST_CHNG_DTL_DTTM" +
+                                                        ")" +
+                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'N', '" + now + "', '" + now + "')";
             PreparedStatement ps = connection.prepareStatement(sql);
 
             System.out.println("===== 계약정보 DB INSERT =====");
+
+            int cnt = 1;
 
             for (JsonElement e : resultJsonArr) {
                 String cntrctNo = e.getAsJsonObject().get("cntrctNo").getAsString();                                // 계약번호
@@ -367,11 +373,12 @@ public class Egov_Cntrct_Daily implements Runnable{
                 ps.setString(43, rprsntCorpContactTel);
                 ps.setString(44, dataBssDate);
 
-
                 int result = ps.executeUpdate();
 
+                cnt++;
+
                 if (result > 0) {
-                    System.out.println("[SUCCESS] INSERT 처리");
+                    System.out.println("[SUCCESS] " + cnt + "/" + resultJsonArr.size() + "번째 데이터 INSERT 처리");
                 } else {
                     System.out.println("[NO CHANGE] INSERT 없음");
                 }
@@ -430,5 +437,3 @@ public class Egov_Cntrct_Daily implements Runnable{
 
 
 }
-
-
